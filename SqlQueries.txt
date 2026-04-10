@@ -62,3 +62,71 @@ mysql> select *  from orders order by cnum desc;
 | 3003 |  767.19 | 1996-10-03 | 2001 | 1001 |
 +------+---------+------------+------+------+
 10 rows in set (0.00 sec)
+
+Q6)-
+mysql> select distinct sname from orders o join salespeople s where o.snum=s.snum;
++---------+
+| sname   |
++---------+
+| Peel    |
+| Serres  |
+| AxelRod |
+| Motika  |
+| Rifkin  |
++---------+
+5 rows in set (0.00 sec)
+
+Q7)-
+mysql> select cname,sname from customers c inner join salespeople s where c.snum=s.snum;
++----------+---------+
+| cname    | sname   |
++----------+---------+
+| Hoffman  | Peel    |
+| Giovanni | AxelRod |
+| Liu      | Serres  |
+| Grass    | Serres  |
+| Clemens  | Peel    |
+| Pereira  | Motika  |
+| Cisneros | Rifkin  |
++----------+---------+
+7 rows in set (0.00 sec)
+
+Q8)-
+mysql> with t as ( select snum from customers group by snum having count(cnum)>1) select  sname from salespeople where snum in ( select snum from t);
++--------+
+| sname  |
++--------+
+| Peel   |
+| Serres |
++--------+
+2 rows in set (0.00 sec)
+
+Q9)-
+
+mysql> with t as ( select distinct snum,count(onum) over(partition by snum) as countonum from orders) select s.sname,countonum from salespeople s inner join t on s.snum=t.snum order by countonum desc;
++---------+-----------+
+| sname   | countonum |
++---------+-----------+
+| Peel    |         3 |
+| Serres  |         2 |
+| AxelRod |         2 |
+| Rifkin  |         2 |
+| Motika  |         1 |
++---------+-----------+
+5 rows in set (0.00 sec)
+
+Q10)-
+mysql> select * from customers where (select count(*) from customers where city='san jose')>1;
++------+----------+----------+--------+------+
+| CNUM | CNAME    | CITY     | RATING | SNUM |
++------+----------+----------+--------+------+
+| 2001 | Hoffman  | London   |    100 | 1001 |
+| 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2003 | Liu      | San Jose |    200 | 1002 |
+| 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2006 | Clemens  | London   |    100 | 1001 |
+| 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2008 | Cisneros | San Jose |    300 | 1007 |
++------+----------+----------+--------+------+
+7 rows in set (0.00 sec)
+
