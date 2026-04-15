@@ -352,3 +352,160 @@ mysql> with t as( select c.city from customers c inner join salespeople s on s.s
 3 rows in set (0.00 sec)
 
 
+Q26)-
+mysql> select * from customers where rating>200;
++------+----------+----------+--------+------+
+| CNUM | CNAME    | CITY     | RATING | SNUM |
++------+----------+----------+--------+------+
+| 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2008 | Cisneros | San Jose |    300 | 1007 |
++------+----------+----------+--------+------+
+2 rows in set (0.02 sec)
+
+Q27)-
+mysql> select count(distinct snum) from orders;
++----------------------+
+| count(distinct snum) |
++----------------------+
+|                    5 |
++----------------------+
+1 row in set (0.00 sec)
+
+Q28)-
+mysql> select cname,concat(comm*100,'%') from customers c inner join salespeople s on c.snum=s.snum where comm>00.12;
++----------+----------------------+
+| cname    | concat(comm*100,'%') |
++----------+----------------------+
+| Liu      | 13.00%               |
+| Grass    | 13.00%               |
+| Cisneros | 15.00%               |
++----------+----------------------+
+3 rows in set (0.01 sec)
+
+or
+
+mysql> with t as( select * from salespeople where comm>(00.12)) select cname,comm from customers c inner join t on c.snum=t.snum;
++----------+------+
+| cname    | COMM |
++----------+------+
+| Liu      | 0.13 |
+| Grass    | 0.13 |
+| Cisneros | 0.15 |
++----------+------+
+3 rows in set (0.00 sec)
+
+Q29)-
+mysql> with t as( select distinct snum,count(cnum) over (partition by snum) as help from customers) select sname from salespeople s inner join t on t.snum=s.snum where help>1;
++--------+
+| sname  |
++--------+
+| Peel   |
+| Serres |
++--------+
+2 rows in set (0.00 sec)
+
+or
+
+mysql> with t as( select snum,count(cnum) from customers group by snum having count(cnum)>1) select sname,s.snum from salespeople s inner join t on s.snum=t.snum;
++--------+------+
+| sname  | snum |
++--------+------+
+| Peel   | 1001 |
+| Serres | 1002 |
++--------+------+
+2 rows in set (0.01 sec)
+
+or
+
+mysql> select snum,sname from salespeople where snum in (select c1.snum from customers c1 inner join customers c2 on c1.snum=c2.snum and c1.cnum<c2.cnum);
++------+--------+
+| snum | sname  |
++------+--------+
+| 1001 | Peel   |
+| 1002 | Serres |
++------+--------+
+2 rows in set (0.00 sec)
+
+Q30)-
+mysql> select distinct sname from customers c inner join salespeople s on s.snum=c.snum where c.city=s.city;
++--------+
+| sname  |
++--------+
+| Peel   |
+| Serres |
++--------+
+2 rows in set (0.00 sec)
+
+Q31)-
+
+mysql> select * from salespeople where sname like 'p__l%';
++------+-------+--------+------+
+| SNUM | SNAME | CITY   | COMM |
++------+-------+--------+------+
+| 1001 | Peel  | London | 0.12 |
++------+-------+--------+------+
+1 row in set (0.00 sec)
+
+Q32)-
+
+mysql> select onum from orders where cnum in (select cnum from customers where cname = 'cisneros');
++------+
+| onum |
++------+
+| 3001 |
+| 3006 |
++------+
+2 rows in set (0.00 sec)
+
+or
+
+mysql> select onum from orders o inner join customers c on c.cnum=o.cnum where cname='cisneros';
++------+
+| onum |
++------+
+| 3001 |
+| 3006 |
++------+
+2 rows in set (0.00 sec)
+
+Q33)-
+
+
+ mysql> with t as(select distinct o.snum,max(amt) over (partition by o.snum) as help from orders o inner join salespeople s on s.snum=o.snum where sname='Rifkin' or sname='serres' ) select onum,amt,help,cnum,o.snum from orders o inner join t on t.snum=o.snum where amt = help;
++------+---------+---------+------+------+
+| onum | amt     | help    | cnum | snum |
++------+---------+---------+------+------+
+| 3005 | 5160.45 | 5160.45 | 2003 | 1002 |
+| 3006 | 1098.16 | 1098.16 | 2008 | 1007 |
++------+---------+---------+------+------+
+2 rows in set (0.04 sec)
+
+Q34)-
+
+ SELECT SNUM, SNAME, COMM, CITY FROM Salespeople;
++------+---------+------+-----------+
+| SNUM | SNAME   | COMM | CITY      |
++------+---------+------+-----------+
+| 1001 | Peel    | 0.12 | London    |
+| 1002 | Serres  | 0.13 | San Jose  |
+| 1003 | AxelRod | 0.10 | New York  |
+| 1004 | Motika  | 0.11 | London    |
+| 1005 | Fran    | 0.26 | London    |
+| 1007 | Rifkin  | 0.15 | Barcelona |
++------+---------+------+-----------+
+6 rows in set (0.00 sec)
+
+Q35)-
+
+mysql> select cname from customers where cname between 'a' and 'h';
++----------+
+| cname    |
++----------+
+| Giovanni |
+| Grass    |
+| Clemens  |
+| Cisneros |
++----------+
+4 rows in set (0.00 sec)
+
+
