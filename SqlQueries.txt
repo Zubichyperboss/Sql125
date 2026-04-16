@@ -508,4 +508,109 @@ mysql> select cname from customers where cname between 'a' and 'h';
 +----------+
 4 rows in set (0.00 sec)
 
+Q36)-
+mysql> select * from customers c1 cross join customers c2;
++------+----------+----------+--------+------+------+----------+----------+--------+------+
+| CNUM | CNAME    | CITY     | RATING | SNUM | CNUM | CNAME    | CITY     | RATING | SNUM |
++------+----------+----------+--------+------+------+----------+----------+--------+------+
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2001 | Hoffman  | London   |    100 | 1001 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2002 | Giovanni | Rome     |    200 | 1003 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2003 | Liu      | San Jose |    200 | 1002 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2006 | Clemens  | London   |    100 | 1001 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2007 | Pereira  | Rome     |    100 | 1004 |
+| 2008 | Cisneros | San Jose |    300 | 1007 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2007 | Pereira  | Rome     |    100 | 1004 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2006 | Clemens  | London   |    100 | 1001 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2004 | Grass    | Berlin   |    300 | 1002 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2003 | Liu      | San Jose |    200 | 1002 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2002 | Giovanni | Rome     |    200 | 1003 | 2008 | Cisneros | San Jose |    300 | 1007 |
+| 2001 | Hoffman  | London   |    100 | 1001 | 2008 | Cisneros | San Jose |    300 | 1007 |
++------+----------+----------+--------+------+------+----------+----------+--------+------+
+49 rows in set (0.00 sec)
+
+Q37)-
+
+mysql> with t as( select odate,avg(amt) as help from orders where odate='1996-10-04' group by odate) select * from orders o inner join t on t.odate=o.odate where amt>help;
++------+---------+------------+------+------+------------+------------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM | odate      | help       |
++------+---------+------------+------+------+------------+------------+
+| 3009 | 1713.23 | 1996-10-04 | 2002 | 1003 | 1996-10-04 | 894.490000 |
++------+---------+------------+------+------+------------+------------+
+1 row in set (0.00 sec)
+
+Q38)-
+
+mysql> with t as(select city,max(rating) as maxr from customers group by city) select cname,cnum,c.city from customers c inner join t on t.city=c.city where rating = (maxr);
++----------+------+----------+
+| cname    | cnum | city     |
++----------+------+----------+
+| Hoffman  | 2001 | London   |
+| Giovanni | 2002 | Rome     |
+| Grass    | 2004 | Berlin   |
+| Clemens  | 2006 | London   |
+| Cisneros | 2008 | San Jose |
++----------+------+----------+
+5 rows in set (0.00 sec)
+
+Q39)-
+
+mysql> select odate,sum(amt) as help from orders  group by odate order  by help desc;
++------------+----------+
+| odate      | help     |
++------------+----------+
+| 1996-10-06 | 11201.83 |
+| 1996-10-03 |  8944.59 |
+| 1996-10-05 |  4723.00 |
+| 1996-10-04 |  1788.98 |
++------------+----------+
+4 rows in set (0.00 sec)
+
+Q40)-
+
+mysql> select distinct rating,cname,city from orders o inner join customers c on c.cnum=o.cnum where city='san jose';
++--------+----------+----------+
+| rating | cname    | city     |
++--------+----------+----------+
+|    200 | Liu      | San Jose |
+|    300 | Cisneros | San Jose |
++--------+----------+----------+
+2 rows in set (0.00 sec)
+
 
