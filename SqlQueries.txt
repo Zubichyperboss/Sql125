@@ -613,4 +613,287 @@ mysql> select distinct rating,cname,city from orders o inner join customers c on
 +--------+----------+----------+
 2 rows in set (0.00 sec)
 
+Q41)-
+
+mysql> with t as (select amt as helpamount from customers c inner join orders o on o.cnum=c.cnum where city='san jose') select orders.amt from orders where amt< any(select helpamount from t);
++---------+
+| amt     |
++---------+
+|   18.69 |
+| 1900.10 |
+|  767.19 |
+| 1098.16 |
+|   75.75 |
+| 4723.00 |
+| 1713.23 |
+| 1309.95 |
++---------+
+8 rows in set (0.00 sec)
+
+or
+
+mysql> select amt from orders where amt<any(select amt from orders where cnum in (select cnum from customers where city='san jose'));
++---------+
+| amt     |
++---------+
+|   18.69 |
+| 1900.10 |
+|  767.19 |
+| 1098.16 |
+|   75.75 |
+| 4723.00 |
+| 1713.23 |
+| 1309.95 |
++---------+
+8 rows in set (0.00 sec)
+
+Q42)-
+
+mysql> with t as(select cnum, avg(amt) as help from orders group by cnum)
+    -> select * from orders o inner join t on t.cnum=o.cnum where amt>help;
++------+---------+------------+------+------+------+-------------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM | cnum | help        |
++------+---------+------------+------+------+------+-------------+
+| 3006 | 1098.16 | 1996-10-03 | 2008 | 1007 | 2008 |  558.425000 |
+| 3009 | 1713.23 | 1996-10-04 | 2002 | 1003 | 2002 |  894.490000 |
+| 3011 | 9891.88 | 1996-10-06 | 2006 | 1001 | 2006 | 7307.440000 |
++------+---------+------------+------+------+------+-------------+
+3 rows in set (0.00 sec)
+
+
+Q43)-
+mysql> select city,max(rating) from customers group by city;
++----------+-------------+
+| city     | max(rating) |
++----------+-------------+
+| London   |         100 |
+| Rome     |         200 |
+| San Jose |         300 |
+| Berlin   |         300 |
++----------+-------------+
+4 rows in set (0.00 sec)
+
+Q44)-
+
+mysql> select s.snum,s.sname,c.cnum,c.cname,o.amt*s.comm as commision from orders o inner join customers c on c.cnum=o.cnum inner join salespeople s on s.snum=o.snum where c.rating>100;
++------+---------+------+----------+-----------+
+| snum | sname   | cnum | cname    | commision |
++------+---------+------+----------+-----------+
+| 1002 | Serres  | 2004 | Grass    |  170.2935 |
+| 1002 | Serres  | 2003 | Liu      |  670.8585 |
+| 1003 | AxelRod | 2002 | Giovanni |  171.3230 |
+| 1003 | AxelRod | 2002 | Giovanni |    7.5750 |
+| 1007 | Rifkin  | 2008 | Cisneros |  164.7240 |
+| 1007 | Rifkin  | 2008 | Cisneros |    2.8035 |
++------+---------+------+----------+-----------+
+6 rows in set (0.01 sec)
+
+Q45)-
+
+mysql> select * from customers where rating >all(select avg(rating) from customers where city='san jose');
++------+----------+----------+--------+------+
+| CNUM | CNAME    | CITY     | RATING | SNUM |
++------+----------+----------+--------+------+
+| 2004 | Grass    | Berlin   |    300 | 1002 |
+| 2008 | Cisneros | San Jose |    300 | 1007 |
++------+----------+----------+--------+------+
+2 rows in set (0.02 sec)
+
+or
+
+mysql> with t as (select avg(rating) as help from customers where city='san jose' group by city) select cname,cnum,rating from customers c cross join t where rating>help;
++----------+------+--------+
+| cname    | cnum | rating |
++----------+------+--------+
+| Grass    | 2004 |    300 |
+| Cisneros | 2008 |    300 |
++----------+------+--------+
+2 rows in set (0.00 sec)
+
+or
+
+mysql> with t as(select distinct avg(rating) over(partition by city) as help from customers where city='san jose') select cname,rating from customers cross join t where rating>help;
++----------+--------+
+| cname    | rating |
++----------+--------+
+| Grass    |    300 |
+| Cisneros |    300 |
++----------+--------+
+2 rows in set (0.00 sec)
+
+Q46)-
+mysql> select s1.sname,s2.sname from salespeople s1 cross join salespeople s2 order by s1.sname;
++---------+---------+
+| sname   | sname   |
++---------+---------+
+| AxelRod | Peel    |
+| AxelRod | Motika  |
+| AxelRod | Serres  |
+| AxelRod | AxelRod |
+| AxelRod | Fran    |
+| AxelRod | Rifkin  |
+| Fran    | Peel    |
+| Fran    | Motika  |
+| Fran    | Serres  |
+| Fran    | AxelRod |
+| Fran    | Fran    |
+| Fran    | Rifkin  |
+| Motika  | Peel    |
+| Motika  | Serres  |
+| Motika  | Motika  |
+| Motika  | AxelRod |
+| Motika  | Fran    |
+| Motika  | Rifkin  |
+| Peel    | Rifkin  |
+| Peel    | Peel    |
+| Peel    | Serres  |
+| Peel    | AxelRod |
+| Peel    | Motika  |
+| Peel    | Fran    |
+| Rifkin  | Fran    |
+| Rifkin  | Rifkin  |
+| Rifkin  | AxelRod |
+| Rifkin  | Peel    |
+| Rifkin  | Serres  |
+| Rifkin  | Motika  |
+| Serres  | Peel    |
+| Serres  | Motika  |
+| Serres  | AxelRod |
+| Serres  | Fran    |
+| Serres  | Rifkin  |
+| Serres  | Serres  |
++---------+---------+
+36 rows in set (0.00 sec)
+
+Q47)-
+
+mysql> select * from salespeople where city in ('barcelona','london');
++------+--------+-----------+------+
+| SNUM | SNAME  | CITY      | COMM |
++------+--------+-----------+------+
+| 1001 | Peel   | London    | 0.12 |
+| 1004 | Motika | London    | 0.11 |
+| 1005 | Fran   | London    | 0.26 |
+| 1007 | Rifkin | Barcelona | 0.15 |
++------+--------+-----------+------+
+4 rows in set (0.00 sec)
+
+Q48)-
+mysql> select snum,count(*) from customers group by snum having count(*)=1;
++------+----------+
+| snum | count(*) |
++------+----------+
+| 1003 |        1 |
+| 1004 |        1 |
+| 1007 |        1 |
++------+----------+
+3 rows in set (0.00 sec)
+
+or
+
+mysql> select sname,c.snum,count(*) from customers c inner join salespeople s on s.snum=c.snum group by sname,c.snum having count(*)=1;
++---------+------+----------+
+| sname   | snum | count(*) |
++---------+------+----------+
+| AxelRod | 1003 |        1 |
+| Motika  | 1004 |        1 |
+| Rifkin  | 1007 |        1 |
++---------+------+----------+
+3 rows in set (0.00 sec)
+
+Q49)-
+mysql> select * from customers c1 inner join customers c2 on c1.snum=c2.snum and c1.cnum<c2.cnum;
++------+---------+----------+--------+------+------+---------+--------+--------+------+
+| CNUM | CNAME   | CITY     | RATING | SNUM | CNUM | CNAME   | CITY   | RATING | SNUM |
++------+---------+----------+--------+------+------+---------+--------+--------+------+
+| 2001 | Hoffman | London   |    100 | 1001 | 2006 | Clemens | London |    100 | 1001 |
+| 2003 | Liu     | San Jose |    200 | 1002 | 2004 | Grass   | Berlin |    300 | 1002 |
++------+---------+----------+--------+------+------+---------+--------+--------+------+
+2 rows in set (0.00 sec)
+
+Q50)-
+mysql> select * from orders where amt>1000;
++------+---------+------------+------+------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM |
++------+---------+------------+------+------+
+| 3002 | 1900.10 | 1996-10-03 | 2007 | 1004 |
+| 3005 | 5160.45 | 1996-10-03 | 2003 | 1002 |
+| 3006 | 1098.16 | 1996-10-03 | 2008 | 1007 |
+| 3008 | 4723.00 | 1996-10-05 | 2006 | 1001 |
+| 3009 | 1713.23 | 1996-10-04 | 2002 | 1003 |
+| 3010 | 1309.95 | 1996-10-06 | 2004 | 1002 |
+| 3011 | 9891.88 | 1996-10-06 | 2006 | 1001 |
++------+---------+------------+------+------+
+7 rows in set (0.00 sec)
+
+Q51)-
+mysql> select onum,cname from orders o inner join customers c on c.cnum=o.cnum;
++------+----------+
+| onum | cname    |
++------+----------+
+| 3003 | Hoffman  |
+| 3007 | Giovanni |
+| 3009 | Giovanni |
+| 3005 | Liu      |
+| 3010 | Grass    |
+| 3008 | Clemens  |
+| 3011 | Clemens  |
+| 3002 | Pereira  |
+| 3001 | Cisneros |
+| 3006 | Cisneros |
++------+----------+
+10 rows in set (0.00 sec)
+
+Q52)-
+
+mysql> select distinct sname,s.snum from salespeople s inner join customers c on c.city=s.city where s.snum<>c.snum;
++--------+------+
+| sname  | snum |
++--------+------+
+| Fran   | 1005 |
+| Motika | 1004 |
+| Serres | 1002 |
++--------+------+
+3 rows in set (0.00 sec)
+
+Q53)-
+
+
+mysql> select cnum,cname,rating from customers where rating >=any (select rating from customers c inner join salespeople s on s.snum=c.snum where sname='serres');
++------+----------+--------+
+| cnum | cname    | rating |
++------+----------+--------+
+| 2002 | Giovanni |    200 |
+| 2003 | Liu      |    200 |
+| 2004 | Grass    |    300 |
+| 2008 | Cisneros |    300 |
++------+----------+--------+
+4 rows in set (0.00 sec)
+
+Q54)-
+mysql> select * from orders where odate in('1996-10-03','1996-10-04');
++------+---------+------------+------+------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM |
++------+---------+------------+------+------+
+| 3001 |   18.69 | 1996-10-03 | 2008 | 1007 |
+| 3002 | 1900.10 | 1996-10-03 | 2007 | 1004 |
+| 3003 |  767.19 | 1996-10-03 | 2001 | 1001 |
+| 3005 | 5160.45 | 1996-10-03 | 2003 | 1002 |
+| 3006 | 1098.16 | 1996-10-03 | 2008 | 1007 |
+| 3007 |   75.75 | 1996-10-04 | 2002 | 1003 |
+| 3009 | 1713.23 | 1996-10-04 | 2002 | 1003 |
++------+---------+------------+------+------+
+7 rows in set (0.00 sec)
+
+Q55)-
+mysql> select cname,o1.onum,o1.cnum,o2.cnum,o2.onum from orders o1 inner join orders o2 on o1.cnum=o2.cnum and o1.onum<o2.onum inner join customers c on o1.cnum=c.cnum;
++----------+------+------+------+------+
+| cname    | onum | cnum | cnum | onum |
++----------+------+------+------+------+
+| Giovanni | 3007 | 2002 | 2002 | 3009 |
+| Clemens  | 3008 | 2006 | 2006 | 3011 |
+| Cisneros | 3001 | 2008 | 2008 | 3006 |
++----------+------+------+------+------+
+3 rows in set (0.00 sec)
+
 
