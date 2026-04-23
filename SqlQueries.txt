@@ -1113,6 +1113,196 @@ mysql> select distinct cname,rating from customers c inner join orders o on o.cn
 +---------+--------+
 2 rows in set (0.00 sec)
 
+Q66)-
+
+mysql> select sum(amt) from orders;
++----------+
+| sum(amt) |
++----------+
+| 26658.40 |
++----------+
+1 row in set (0.00 sec)
+
+Q67)-
+
+mysql> select onum,amt,odate from orders;
++------+---------+------------+
+| onum | amt     | odate      |
++------+---------+------------+
+| 3001 |   18.69 | 1996-10-03 |
+| 3002 | 1900.10 | 1996-10-03 |
+| 3003 |  767.19 | 1996-10-03 |
+| 3005 | 5160.45 | 1996-10-03 |
+| 3006 | 1098.16 | 1996-10-03 |
+| 3007 |   75.75 | 1996-10-04 |
+| 3008 | 4723.00 | 1996-10-05 |
+| 3009 | 1713.23 | 1996-10-04 |
+| 3010 | 1309.95 | 1996-10-06 |
+| 3011 | 9891.88 | 1996-10-06 |
++------+---------+------------+
+10 rows in set (0.00 sec)
+
+Q68)-
+
+mysql> select count(*) from customers where rating is not null;
++----------+
+| count(*) |
++----------+
+|        7 |
++----------+
+1 row in set (0.00 sec)
+
+Q69)-
+
+mysql> select onum,sname,cname from orders o inner join customers c on c.cnum=o.cnum inner join salespeople  s on o.snum=s.snum;
++------+---------+----------+
+| onum | sname   | cname    |
++------+---------+----------+
+| 3003 | Peel    | Hoffman  |
+| 3007 | AxelRod | Giovanni |
+| 3009 | AxelRod | Giovanni |
+| 3005 | Serres  | Liu      |
+| 3010 | Serres  | Grass    |
+| 3008 | Peel    | Clemens  |
+| 3011 | Peel    | Clemens  |
+| 3002 | Motika  | Pereira  |
+| 3001 | Rifkin  | Cisneros |
+| 3006 | Rifkin  | Cisneros |
++------+---------+----------+
+10 rows in set (0.01 sec)
+
+Q70)-
+
+mysql> select cnum,sname,comm from salespeople s inner join customers c on s.snum=c.snum where c.city='london';
++------+-------+------+
+| cnum | sname | comm |
++------+-------+------+
+| 2001 | Peel  | 0.12 |
+| 2006 | Peel  | 0.12 |
++------+-------+------+
+2 rows in set (0.00 sec)
+
+Q71)-
+
+mysql> select * from salespeople s where not exists ( select * from customers c where s.city=c.city and c.snum=s.snum);
++------+---------+-----------+------+
+| SNUM | SNAME   | CITY      | COMM |
++------+---------+-----------+------+
+| 1003 | AxelRod | New York  | 0.10 |
+| 1004 | Motika  | London    | 0.11 |
+| 1005 | Fran    | London    | 0.26 |
+| 1007 | Rifkin  | Barcelona | 0.15 |
++------+---------+-----------+------+
+4 rows in set (0.00 sec)
+
+or
+
+mysql> select s.snum from salespeople s left join customers c on c.snum=s.snum and c.city=s.city group by s.snum having count(cnum)=0;
++------+
+| snum |
++------+
+| 1003 |
+| 1004 |
+| 1005 |
+| 1007 |
++------+
+4 rows in set (0.00 sec)
+
+
+Q72)-
+
+mysql> select * from salespeople s where exists ( select * from customers c where s.snum<>c.snum and c.city=s.city);
++------+--------+----------+------+
+| SNUM | SNAME  | CITY     | COMM |
++------+--------+----------+------+
+| 1002 | Serres | San Jose | 0.13 |
+| 1004 | Motika | London   | 0.11 |
+| 1005 | Fran   | London   | 0.26 |
++------+--------+----------+------+
+3 rows in set (0.00 sec)
+
+Q73)-
+
+mysql> select * from customers c inner join salespeople s on c.snum=s.snum where sname in('peel','motika');
++------+---------+--------+--------+------+------+--------+--------+------+
+| CNUM | CNAME   | CITY   | RATING | SNUM | SNUM | SNAME  | CITY   | COMM |
++------+---------+--------+--------+------+------+--------+--------+------+
+| 2001 | Hoffman | London |    100 | 1001 | 1001 | Peel   | London | 0.12 |
+| 2006 | Clemens | London |    100 | 1001 | 1001 | Peel   | London | 0.12 |
+| 2007 | Pereira | Rome   |    100 | 1004 | 1004 | Motika | London | 0.11 |
++------+---------+--------+--------+------+------+--------+--------+------+
+3 rows in set (0.00 sec)
+
+Q74)-
+
+mysql> select odate,snum,count(*) from orders group by odate,snum;
++------------+------+----------+
+| odate      | snum | count(*) |
++------------+------+----------+
+| 1996-10-03 | 1007 |        2 |
+| 1996-10-03 | 1004 |        1 |
+| 1996-10-03 | 1001 |        1 |
+| 1996-10-03 | 1002 |        1 |
+| 1996-10-04 | 1003 |        2 |
+| 1996-10-05 | 1001 |        1 |
+| 1996-10-06 | 1002 |        1 |
+| 1996-10-06 | 1001 |        1 |
++------------+------+----------+
+8 rows in set (0.00 sec)
+
+or
+
+mysql> select odate,snum,count(distinct snum) from orders group by odate,snum;
++------------+------+----------------------+
+| odate      | snum | count(distinct snum) |
++------------+------+----------------------+
+| 1996-10-03 | 1001 |                    1 |
+| 1996-10-03 | 1002 |                    1 |
+| 1996-10-03 | 1004 |                    1 |
+| 1996-10-03 | 1007 |                    1 |
+| 1996-10-04 | 1003 |                    1 |
+| 1996-10-05 | 1001 |                    1 |
+| 1996-10-06 | 1001 |                    1 |
+| 1996-10-06 | 1002 |                    1 |
++------------+------+----------------------+
+8 rows in set (0.00 sec)
+
+Q75)-
+
+mysql> select * from orders o inner join salespeople s on s.snum=o.snum where city='london';
++------+---------+------------+------+------+------+--------+--------+------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM | SNUM | SNAME  | CITY   | COMM |
++------+---------+------------+------+------+------+--------+--------+------+
+| 3003 |  767.19 | 1996-10-03 | 2001 | 1001 | 1001 | Peel   | London | 0.12 |
+| 3008 | 4723.00 | 1996-10-05 | 2006 | 1001 | 1001 | Peel   | London | 0.12 |
+| 3011 | 9891.88 | 1996-10-06 | 2006 | 1001 | 1001 | Peel   | London | 0.12 |
+| 3002 | 1900.10 | 1996-10-03 | 2007 | 1004 | 1004 | Motika | London | 0.11 |
++------+---------+------------+------+------+------+--------+--------+------+
+4 rows in set (0.00 sec) 
+
+or
+
+mysql> select * from orders where snum in(select snum from salespeople where city='london');
++------+---------+------------+------+------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM |
++------+---------+------------+------+------+
+| 3003 |  767.19 | 1996-10-03 | 2001 | 1001 |
+| 3008 | 4723.00 | 1996-10-05 | 2006 | 1001 |
+| 3011 | 9891.88 | 1996-10-06 | 2006 | 1001 |
+| 3002 | 1900.10 | 1996-10-03 | 2007 | 1004 |
++------+---------+------------+------+------+
+4 rows in set (0.00 sec)mysql> select * from orders where snum in(select snum from salespeople where city='london');
++------+---------+------------+------+------+
+| ONUM | AMT     | ODATE      | CNUM | SNUM |
++------+---------+------------+------+------+
+| 3003 |  767.19 | 1996-10-03 | 2001 | 1001 |
+| 3008 | 4723.00 | 1996-10-05 | 2006 | 1001 |
+| 3011 | 9891.88 | 1996-10-06 | 2006 | 1001 |
+| 3002 | 1900.10 | 1996-10-03 | 2007 | 1004 |
++------+---------+------------+------+------+
+4 rows in set (0.00 sec)
+
+
 
 
 
